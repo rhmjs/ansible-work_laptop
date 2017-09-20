@@ -1,0 +1,9 @@
+# Install Atom Editor
+- name: Try to install Atom Editor
+  package: name=atom state=latest
+  register: atom_result
+  ignore_errors: true
+
+- name: Install Atom from URL if repo not yet configured (failure from previous step)
+  package: name="{{ atom_url }}" state=latest
+  when: atom_result | failed

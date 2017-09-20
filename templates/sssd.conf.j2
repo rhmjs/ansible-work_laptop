@@ -1,0 +1,28 @@
+[sssd]
+config_file_version = 2
+services = nss, pam, ssh
+domains = redhat.com
+
+[nss]
+filter_groups = root
+filter_users = root
+
+[pam]
+
+[domain/redhat.com]
+id_provider = ldap    
+ldap_uri = ldaps://dc=redhat%2Cdc=com, ldaps://ldap.corp.redhat.com    
+ldap_search_base = dc=redhat,dc=com    
+enumerate = False    
+create_homedir = True    
+override_homedir = /home/%u    
+
+auth_provider = krb5    
+krb5_server = kerberos.brq.redhat.com, kerberos.corp.redhat.com    
+krb5_realm = REDHAT.COM    
+cache_credentials = True    
+krb5_store_password_if_offline = True    
+chpass_provider = krb5    
+krb5_kpasswd = kerberos.corp.redhat.com   
+access_provider = simple  
+simple_allow_users = {{ local_user }}

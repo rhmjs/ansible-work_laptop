@@ -1,0 +1,22 @@
+# Configure for Red Hat corporate ID
+- name: Fetch authconfig info
+  command: authconfig --test
+  register: ac_result1
+  changed_when: false
+
+- name: Install krb5.conf
+  template: src="krb5.conf.j2" dest="/etc/krb5.conf" mode="644" owner="root" group="root"
+
+- name: Install sssd.conf
+  template: src="sssd.conf.j2" dest="/etc/sssd/sssd.conf" mode="600" owner="root" group="root"
+  notify: Reload sssd
+
+- name: Enable SSSD authentication
+  command: authconfig --enablesssdauth --enablesssd --enablemkhomedir --update
+  changed_when: false
+
+- name: Fetch authconfig info
+  command: authconfig --test
+  register: ac_result2
+  changed_when: ac_result1.stdout != ac_result2.stdout
+  notify: Reload sssd

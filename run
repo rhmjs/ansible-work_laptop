@@ -1,0 +1,10 @@
+#!/bin/bash
+CMD="ansible-playbook -vvvv"
+PB=$1
+
+if ! ( sudo -n true ); then
+	CMD="$CMD --ask-sudo-pass"
+fi
+time (
+  $CMD $PB
+)

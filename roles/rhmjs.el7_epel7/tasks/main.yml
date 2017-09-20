@@ -1,0 +1,16 @@
+# Install EPEL repo, but leave it disabled
+- name: Configure EPEL repository (Check if already exists)
+  package: name=epel-release state=latest
+  register: epelrepo_result
+  ignore_errors: true
+
+- name: Configure EPEL repository (Install if not already exist)
+  package: name="{{ epel7_url }}"
+  when: epelrepo_result | failed
+
+- name: Disable EPEL repository by default
+  ini_file:
+    dest: /etc/yum.repos.d/epel.repo
+    section: epel
+    option: enabled
+    value: 0

@@ -1,0 +1,25 @@
+# Update personal preferences
+- name: Read current state of switch-windows
+  become: "{{ local_user }}"
+  command: dconf read /org/gnome/desktop/wm/keybindings/switch-windows
+  register: dconf_result
+  changed_when: false
+
+- name: Update switch-windows to ALT+Tab if not already set
+  become: "{{ local_user }}"
+  command: dconf write /org/gnome/desktop/wm/keybindings/switch-windows "['<Alt>Tab']"
+  when: dconf_result.stdout != "['<Alt>Tab']"
+
+- name: Read current state of switch-windows-backward
+  become: "{{ local_user }}"
+  command: dconf read /org/gnome/desktop/wm/keybindings/switch-windows-backward
+  register: dconf_result
+  changed_when: false
+
+- name: Update switch-windows to ALT+Tab if not already set
+  become: "{{ local_user }}"
+  command: dconf write /org/gnome/desktop/wm/keybindings/switch-windows-backward "['<Shift><Alt>Tab']"
+  when: dconf_result.stdout != "['<Shift><Alt>Tab']"
+
+- name: Install task warrior
+  yum: enablerepo="epel" name="task" state="latest"

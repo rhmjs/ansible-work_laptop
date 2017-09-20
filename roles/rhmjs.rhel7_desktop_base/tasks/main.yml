@@ -1,0 +1,49 @@
+# Initial Lockdown
+- name: Configure firewall to block SSH (Default zone is "public")
+  firewalld: service="ssh" permanent="true" immediate="true" state="disabled"
+
+- name: Disable sshd (Don't want sshd running on a road warrior laptop)
+  service: name="sshd" enabled="no" state="stopped"
+
+# Register with RHSM, configure appropriate repositories
+- name: Register with RHSM
+  redhat_subscription:
+    state: present
+    org_id: "{{ rhsm_org_id }}"
+    activationkey: "{{ rhsm_activation_key }}"
+  when: rhsm_org_id is defined
+
+- name: Capture all repo info
+  shell: subscription-manager repos --list-enabled | grep "^Repo ID" | sed 's/^Repo ID. *//'
+  register: sm_repolist_reg
+  changed_when: false
+
+- name: Disable unnecessary repos
+  command: subscription-manager repos --disable {{ item }}
+  with_items: "{{ sm_repolist_reg.stdout.split('\n') | difference(redhat_repositories) }}"
+  changed_when: true
+
+- name: Enable necessary repos # Note the logic here is not exactly inverse of above, to force failure if there is an entry in redhat_repositories that is unknown to system
+  command: subscription-manager repos --enable {{ item }}
+  with_items: "{{ redhat_repositories | difference ( sm_repolist_reg.stdout.split('\n') ) }}"
+  changed_when: true
+
+- name: Update everything
+  package: name="*" state=latest
+
+# Clean out unwanted packages
+- name: Remove unwanted packages
+  package: name={{ item }} state=absent
+  with_items: "{{ remove_packages }}"
+
+# Install useful software from RHEL repos
+- name: Install software
+  yum: name={{ item }} state=latest
+  with_items: "{{ install_packages }}"
+
+# Install and Enable Cockpit
+- name: Install Cockpit
+  yum: name=cockpit state=latest
+
+- name: Enable and start Cockpit
+  service: name="cockpit" enabled="yes" state="started"

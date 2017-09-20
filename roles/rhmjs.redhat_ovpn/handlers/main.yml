@@ -1,0 +1,2 @@
+- name: Reload NetworkManager
+  command: nmcli conn reload

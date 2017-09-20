@@ -1,0 +1,37 @@
+
+redhat_repositories:
+- rhel-7-server-rpms
+- rhel-7-server-extras-rpms
+
+install_packages:
+- virt-manager
+- tuned
+- nmap
+- tcpdump
+- git
+- vim
+- NetworkManager-openvpn-gnome
+- NetworkManager-openvpn
+- libselinux-python
+- ansible
+- cockpit
+- cockpit-dashboard
+- cockpit-pcp
+- cockpit-shell
+- cockpit-storaged
+- cockpit-system
+- krb5-workstation
+- sssd
+- sssd-krb5
+- sssd-ldap
+
+remove_packages:
+- firefox
+
+redhat_itca_rpm: "{{ secret_redhat_itca_rpm }}"
+redhat_ovpn_rpm: "{{ secret_redhat_ovpn_rpm }}"
+
+# Specify these secret_* vars in ../secrets.yml
+local_user: "{{ secret_local_user }}" # Your local user ID, should match your Red Hat Kerberos Principal.  E.g., matsmith
+rhsm_org_id: "{{ secret_rhsm_org_id }}" # Your RHSM Organization ID
+rhsm_activation_key: "{{ secret_rhsm_activation_key }}" # An activation key you've created in RHSM that grants at least RHEL Server entitlement

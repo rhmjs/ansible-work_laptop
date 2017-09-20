@@ -1,0 +1,9 @@
+# Install Chrome Browser
+- name: Try to install Chrome Browser
+  package: name=google-chrome-stable state=latest
+  register: chrome_result
+  ignore_errors: true
+
+- name: Install Chrome Browser from URL if repo not yet configured (failure from previous step)
+  package: name="{{ googlechrome_url }}" state=latest
+  when: chrome_result | failed

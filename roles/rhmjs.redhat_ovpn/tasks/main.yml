@@ -1,0 +1,33 @@
+# Install Red Hat OpenVPN configs for NetworkManager
+- name: Try to install Red Hat IT CA
+  package: name="redhat-internal-cert-install" state=latest
+  register: ca_result
+  ignore_errors: true
+
+- name: Fetch Red Hat IT CA RPM
+  get_url: url="{{ redhat_itca_rpm }}" dest="/tmp/redhat-internal-cert-install.rpm"
+  when: ca_result | failed
+
+- name: Install Red Hat IT CA
+  package: name="/tmp/redhat-internal-cert-install.rpm" state=latest
+  when: ca_result | failed
+
+- name: Try to install Red Hat OpenVPN Profiles
+  package: name="redhat-internal-NetworkManager-openvpn-profiles" state=latest
+  register: ovpn_result
+  ignore_errors: true
+
+- name: Fetch Red Hat OpenVPN Profiles RPM
+  get_url: url="{{ redhat_ovpn_rpm }}" dest="/tmp/redhat-internal-NetworkManager-openvpn-profiles.rpm"
+  when: ovpn_result | failed
+
+- name: Install Red Hat OpenvPN Profiles
+  package: name="/tmp/redhat-internal-NetworkManager-openvpn-profiles.rpm" state="latest"
+  when: ovpn_result | failed
+  notify: Reload NetworkManager
+
+- name: Clean up tmp RPMs
+  file: name="{{ item }}" state=absent
+  with_items:
+  - /tmp/redhat-internal-cert-install.rpm
+  - /tmp/redhat-internal-NetworkManager-openvpn-profiles.rpm

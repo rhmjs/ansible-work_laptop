@@ -1,0 +1,18 @@
+###
+# Playbook to configure laptop running rhel-7 server
+# Run this playbook with:
+#  ansible-playbook --ask-sudo-pass -i localhost, playbook.yml
+#
+
+- hosts: localhost
+  become: yes
+  vars_files:
+  - secrets.yml
+  roles:
+  - rhmjs.rhel7_desktop_base
+  - rhmjs.el7_epel7
+  - rhmjs.el7_googlechrome
+  - rhmjs.el7_atom
+  - rhmjs.redhat_ovpn
+  - rhmjs.redhat_sssd
+  - rhmjs.personal_prefs
