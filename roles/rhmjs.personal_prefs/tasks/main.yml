@@ -1,5 +1,12 @@
 # Update personal preferences
+- name: Install gnome-shell customizations
+  yum: name="{{ item }}" state="latest" enablerepo="epel"
+  with_items:
+  - gnome-shell-extension-alternate-tab
+  - gnome-shell-extension-freon
+  - gnome-shell-extension-openweather
 - name: Read current state of switch-windows
+
   become: "{{ local_user }}"
   command: dconf read /org/gnome/desktop/wm/keybindings/switch-windows
   register: dconf_result
@@ -23,3 +30,6 @@
 
 - name: Install task warrior
   yum: enablerepo="epel" name="task" state="latest"
+
+- name: Update all
+  yum: enablerepo="epel" name="*" state="latest"

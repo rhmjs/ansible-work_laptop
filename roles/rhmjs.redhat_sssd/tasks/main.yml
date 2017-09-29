@@ -1,4 +1,13 @@
 # Configure for Red Hat corporate ID
+- name: Store SSSD cache in tmpfs
+  mount:
+    path:  /var/lib/sss/db/
+    src: tmpfs
+    fstype: tmpfs
+    opts: size=300M,mode=0700,noauto,rootcontext=system_u:object_r:sssd_var_lib_t:s0
+    state: present
+  notify: Remount sssd cache directory
+
 - name: Fetch authconfig info
   command: authconfig --test
   register: ac_result1
